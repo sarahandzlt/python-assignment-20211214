@@ -5,8 +5,8 @@ from dateutil.relativedelta import relativedelta
 
 
 class BasicAccount:
-
     account_number_static = 0
+
     @staticmethod
     def get_new_account_num():
         BasicAccount.account_number_static += 1
@@ -31,7 +31,8 @@ class BasicAccount:
         if cardExp is None or len(cardExp) == 0:
             d1 = datetime.now()
             expiry_date = d1 + relativedelta(years=+3)
-            cardExp = (expiry_date.month, expiry_date.year)
+            stryear = expiry_date.__format__('%y')
+            self.cardExp = (expiry_date.month, int(stryear))
         else:
             self.cardExp = cardExp
         self.overdraft = overdraft
@@ -111,7 +112,6 @@ class BasicAccount:
         self.withdraw(self.balance)
         return True
 
-
     def del_BasicAccount_acNum(self):
         del self.acNum
         return False
@@ -119,15 +119,23 @@ class BasicAccount:
     print('Can not close account due to customer being overdrawn by £<amount>')
 
     def __str__(self):
-        return 'Account[' + self.acNum + '] - ' + \
-               self.name + ', ' + self.type + ' account = ' + str(self.balance)
+        # self.acNum数据类型变了，IDE提醒你，颜色都变了
+        # return 'Account[' + self.acNum + '] - ' + \
+        #        self.name + ', ' + self.type + ' account = ' + str(self.balance)
+        # 应该这样
+        # return 'Account[' + self.acNum.__str__() + '] - ' + \
+        #        self.name + ', ' + self.type + ' account = ' + str(self.balance)
+        # 或者str(***)也行，但我觉得这个并非万能，万能应该是
+        return 'Account[{acNum}] - {name} , {type}  account = {balance}'.format(
+            acNum=self.acNum, name=self.name, type=self.type, balance=self.balance)
+        #测试一把再放上去，这个是核心方法，报错会全局都错
 
 
 class PremiumAccount(BasicAccount):
 
     def __init__(self, acName: string, openingBalance: float, initialOverdraft: float, overdraftLimit=0,
                  acNum='', cardNum='', cardExp=''):
-        super().__init__(acName=acName, acNum=acNum,
+        super().__init__(acName=acName, #acNum=acNum,
                          openingBalance=openingBalance, cardNum=cardNum,
                          cardExp=cardExp, overdraftLimit=overdraftLimit)
         self.overdraft = initialOverdraft
@@ -169,7 +177,7 @@ class PremiumAccount(BasicAccount):
     #     else:
     #         return self.balance
 
-    #基础类做就可以了
+    # 基础类做就可以了
     # def closeAccount(self):
     #     if self.overdraft <= 0:
     #         self.balance.withdraw()
