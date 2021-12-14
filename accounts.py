@@ -5,14 +5,25 @@ from dateutil.relativedelta import relativedelta
 
 
 class BasicAccount:
+
+    account_number_static = 0
+    @staticmethod
+    def get_new_account_num():
+        BasicAccount.account_number_static += 1
+        return BasicAccount.account_number_static
+
     def __init__(self, acName: string, openingBalance: float, overdraftLimit=0,
-                 acNum='', cardNum='', cardExp=None, overdraft=0):
+                 # acNum='',
+                 cardNum='', cardExp=None, overdraft=0):
         self.name = acName
-        if acNum is None or len(acNum) <= 0:
-            self.acNum = random.randint(1000000000000000, 9999999999999999).__str__()
-        else:
-            self.acNum = acNum
+        self.acNum = BasicAccount.get_new_account_num()
+        # if acNum is None or len(acNum) <= 0:
+        #     self.acNum = random.randint(1000000000000000, 9999999999999999).__str__()
+        # else:
+        #     self.acNum = acNum
+
         self.balance = openingBalance
+
         if cardNum is None or len(cardNum) == 0:
             self.cardNum = random.randint(1000000000000000, 9999999999999999).__str__()
         else:
