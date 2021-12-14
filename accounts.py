@@ -4,6 +4,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 
+# 总要交稿的，交稿前删掉大部分的没用的注释
 class BasicAccount:
     account_number_static = 0
 
