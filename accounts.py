@@ -146,6 +146,23 @@ class PremiumAccount(BasicAccount):
         self.overdraft = initialOverdraft
         self.type = 'premium'
 
+    # 只能猜测deposit有bug了
+    def deposit(self, amount):
+        if amount < 0:
+            print('cannot deposit negative amounts')
+            return
+
+        if self.overdraft > 0:
+            if amount > self.overdraft:
+                diff = amount - self.overdraft
+                self.overdraft = 0
+                self.balance += diff
+            else:
+                self.overdraft -= amount   # 存钱把overdraft恢复
+        else:
+            self.balance += amount
+
+
     def withdraw(self, amount):
         if amount > self.balance and amount > (self.balance + self.overdraftLimit - self.overdraft):
             # 后面这个应该是premium的逻辑
