@@ -72,22 +72,27 @@ class BasicAccount:
         return self.balance
 
     def getAvailableBalance(self):
-        if self.overdraft > 0:
-            return -self.overdraft
-        return self.balance
+        # if self.overdraft > 0:
+        #     return -self.overdraft
+        return self.balance + self.overdraftLimit - self.overdraft
 
     def getBalance(self):
+        # 基础类应该一直都是没有overdraft，不知道理解对不对
         if self.overdraft > 0:
-            return self.getAvailableBalance()  # 'a negative value'
+            return - self.overdraft  # 'a negative value'
+            # return self.getAvailableBalance()
         else:
             return self.balance
 
     def printBalance(self):
+        # 这个是print方法
+        str_out = 'Account[{acNum}] - {name} , {type}  Balance = {balance}'.format(
+            acNum=self.acNum, name=self.name, type=self.type, balance=self.balance)
         if self.overdraft > 0:
             # self.overdraft = self.balance - amount
-            print('overdraft ie remaining:', self.overdraftLimit - self.overdraft)
-        else:
-            return self.balance
+            str_out += ' overdraft is: ' + self.overdraft.__str__()
+        print(str_out)
+
 
     def getName(self):
         return str(self.name)
