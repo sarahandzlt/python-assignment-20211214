@@ -27,9 +27,10 @@ def dictatorship(preferenceProfile, agent):
     # 格式是{1: [4, 2, 1, 3], 2: [3, 4, 1, 2], 3: [4, 3, 1, 2], 4: [1, 3, 4, 2], 5: [2, 3, 4, 1], 6: [2, 1, 3, 4]}
     # 需要注意value才是选票
     if agent in values.keys():
-        return values[agent][0] #返回第一个
+        return values[agent][0]  # 返回第一个
 
     return 0
+
 
 # TODO:
 def scoringRule(preferences, scoreVector, tieBreak):
@@ -54,12 +55,12 @@ def plurality(preferences, tieBreak):
         # 保证了选择存在dict，可以统计了
         dict[current_row[0]] += 1
 
-    return tieBreakFindValueByDict(dict,tieBreak)
+    return tieBreakFindValueByDict(dict, tieBreak)
 
 
 def veto(preferences, tieBreak):
     # 无论怎么样，要先calculate并汇总所有的投票
-    # plurality意思是第一个出现得最多的
+    # vento意思大概是 最后一个是0，那么除了最后一个，其他加1
     # 传进来的可能就不是排过序的，那就先
     values = generatePerferences(preferences)
 
@@ -70,11 +71,11 @@ def veto(preferences, tieBreak):
             if current_row[i] not in dict.keys():  ##未经记录，设置为0
                 dict[current_row[i]] = 0
             # 保证了选择存在dict，可以统计了
-            if i != len(current_row) - 1: #最后一个是0，那么除了最后一个，其他加1
+            if i != len(current_row) - 1:  # 最后一个是0，那么除了最后一个，其他加1
                 dict[current_row[i]] += 1
 
     return tieBreakFindValueByDict(dict, tieBreak)
-    #return 0
+    # return 0
 
 
 def borda(preferences, tieBreak):
@@ -120,9 +121,24 @@ def tieBreakFindValueByDict(dict, tieBreak):
     rng = int(tieBreak)
     return list[rng]
 
-# TODO:
+
 def harmonic(preferences, tieBreak):
-    return 0
+    # 无论怎么样，要先calculate并汇总所有的投票
+    # harmonic意思大概是 第一个就是1/1 最后一个1/m
+    # 传进来的可能就不是排过序的，那就先
+    values = generatePerferences(preferences)
+
+    dict = {}
+    for current_row in values.values():
+        # 记录所有出现的次数，需要改用range
+        for i in range(len(current_row)):
+            if current_row[i] not in dict.keys():  ##未经记录，设置为0
+                dict[current_row[i]] = 0.0
+            # 保证了选择存在dict，可以统计了
+            dict[current_row[i]] += (1.0 / float(i + 1))
+
+    return tieBreakFindValueByDict(dict, tieBreak)
+    #return 0
 
 
 def STV(preferences, tieBreak):
@@ -163,7 +179,8 @@ def STV(preferences, tieBreak):
     rng = int(tieBreak)
     return list[rng]
 
-    #return 0
+    # return 0
+
 
 # TODO:
 def rangeVoting(values, tieBreak):
