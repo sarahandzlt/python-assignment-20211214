@@ -20,12 +20,16 @@ def dictatorship(preferenceProfile, agent):
     print(preferenceProfile)
     print(agent)
     print("END dictatorship")
-    # 根据agent作为key值，在set里面获取到preference，取得preference第一个
-    return preferenceProfile[agent][0]
-    # 或者传进来的根本就不是排过序的，那就先
+
+    # 一个agent 决定一切，他的选择的第一个就是结果
+    # 传进来的可能就不是排过序的，那就先
     values = generatePerferences(preferenceProfile)
-    # 得出values，再按照上面的方式读取第一个
-    return values[agent][0]
+
+    for prep in values:
+        if prep['index'] == agent: #判断哪组值是Agent的
+            return prep['value'][0] #返回第一个
+
+    return 0
 
 
 def scoringRule(preferences, scoreVector, tieBreak):
@@ -67,35 +71,34 @@ def borda(preferences, tieBreak):
             dict[pref[i]] = dict[pref[i]] + current
 
     # 最终dict就是结果，但不能立刻返回
+    return tieBreakFindValueByDict(dict, tieBreak)
+
+    # return 0
+
+
+def tieBreakFindValueByDict(dict, tieBreak):
     # 简单好懂的做法就是把最大的current_max挑出来
     # 把所有的选择都放进set
     dataset = set([])
     current_max = 0
     for k in dict.keys():
         current_max = max(current_max, dict[k])
-
     for k in dict.keys():
         if dict[k] >= current_max:
             dataset.add(k)
-        #挑出最大值的
-
-    #然后set就是最大值的候选，多于一个则是同分
-
+        # 挑出最大值的
+    # 然后set就是最大值的候选，多于一个则是同分
     # 同分的时候，根据tieBreak选择
     # 剩下的元素使用tieBreak
     if tieBreak == 'min':  # 找出最大的同时的最小index
         return min(dataset)
-
     if tieBreak == 'max':
         return max(dataset)
-
     # else 取index
     list = []
     list.extend(set)
     rng = int(tieBreak)
     return list[rng]
-
-    return 0
 
 
 def harmonic(preferences, tieBreak):
