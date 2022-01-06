@@ -24,14 +24,14 @@ def dictatorship(preferenceProfile, agent):
     # 一个agent 决定一切，他的选择的第一个就是结果
     # 传进来的可能就不是排过序的，那就先
     values = generatePerferences(preferenceProfile)
-
-    for prep in values:
-        if prep['index'] == agent: #判断哪组值是Agent的
-            return prep['value'][0] #返回第一个
+    # 格式是{1: [4, 2, 1, 3], 2: [3, 4, 1, 2], 3: [4, 3, 1, 2], 4: [1, 3, 4, 2], 5: [2, 3, 4, 1], 6: [2, 1, 3, 4]}
+    # 需要注意value才是选票
+    if agent in values.keys():
+        return values[agent][0] #返回第一个
 
     return 0
 
-
+# TODO:
 def scoringRule(preferences, scoreVector, tieBreak):
     votesDict = {}
     values = generatePerferences(preferences)
@@ -44,20 +44,37 @@ def plurality(preferences, tieBreak):
     # plurality意思是第一个出现得最多的
     # 传进来的可能就不是排过序的，那就先
     values = generatePerferences(preferences)
-
+    # 格式是{1: [4, 2, 1, 3], 2: [3, 4, 1, 2], 3: [4, 3, 1, 2], 4: [1, 3, 4, 2], 5: [2, 3, 4, 1], 6: [2, 1, 3, 4]}
+    # 需要注意value(冒号右边）才是选票
     # 记录第一个出现的次数
     dict = {}
-    for pref in values:
-        if pref[0] not in dict.keys():  ##未经记录，设置为0
-            dict[pref[0]] = 0
+    for current_row in values.values():
+        if current_row[0] not in dict.keys():  ##未经记录，设置为0
+            dict[current_row[0]] = 0
         # 保证了选择存在dict，可以统计了
-        dict[pref[0]] += 1
+        dict[current_row[0]] += 1
 
     return tieBreakFindValueByDict(dict,tieBreak)
 
 
 def veto(preferences, tieBreak):
-    return 0
+    # 无论怎么样，要先calculate并汇总所有的投票
+    # plurality意思是第一个出现得最多的
+    # 传进来的可能就不是排过序的，那就先
+    values = generatePerferences(preferences)
+
+    dict = {}
+    for current_row in values.values():
+        # 记录所有出现的次数，需要改用range
+        for i in range(len(current_row)):
+            if current_row[i] not in dict.keys():  ##未经记录，设置为0
+                dict[current_row[i]] = 0
+            # 保证了选择存在dict，可以统计了
+            if i != len(current_row) - 1: #最后一个是0，那么除了最后一个，其他加1
+                dict[current_row[i]] += 1
+
+    return tieBreakFindValueByDict(dict, tieBreak)
+    #return 0
 
 
 def borda(preferences, tieBreak):
@@ -103,21 +120,36 @@ def tieBreakFindValueByDict(dict, tieBreak):
     rng = int(tieBreak)
     return list[rng]
 
-
+# TODO:
 def harmonic(preferences, tieBreak):
     return 0
 
 
 def STV(preferences, tieBreak):
+    # 无论怎么样，要先calculate并汇总所有的投票
+    # STV意思好像是一票否决，最后一个留下的就是赢家
+    # 传进来的可能就不是排过序的，那就先
+    values = generatePerferences(preferences)
+    # 格式是{1: [4, 2, 1, 3], 2: [3, 4, 1, 2], 3: [4, 3, 1, 2], 4: [1, 3, 4, 2], 5: [2, 3, 4, 1], 6: [2, 1, 3, 4]}
+    # 需要注意value(冒号右边）才是选票
+
+    key_list = []
+    key_list.extend(values.keys())
+    key_list.sort()
     # 每一次迭代，拿掉最后的那个
     dataset = set([])
     # 先把所有元素都加入set
-    for prep in preferences:
+    for prep in values.values():
         for p in prep:
             dataset.add(p)
     # 迭代所有，去掉最末尾
-    for prep in preferences:
-        dataset.remove(prep[-1])
+    for key in key_list:
+        prep = values[key]
+        if prep in dataset and len(dataset) > 1:
+            dataset.remove(prep[-1])
+        if len(dataset) == 1:
+            return dataset.pop()
+
     # 剩下的元素使用tieBreak
     if tieBreak == 'min':
         return min(dataset)
@@ -133,7 +165,7 @@ def STV(preferences, tieBreak):
 
     #return 0
 
-
+# TODO:
 def rangeVoting(values, tieBreak):
     # 这个是最终需要实现的
     # 传进来应该第一步需要获取priority排序，使用task1的办法
