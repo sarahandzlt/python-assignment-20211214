@@ -41,16 +41,19 @@ def scoringRule(preferences, scoreVector, tieBreak):
 
 def plurality(preferences, tieBreak):
     # 无论怎么样，要先calculate并汇总所有的投票
+    # plurality意思是第一个出现得最多的
+    # 传进来的可能就不是排过序的，那就先
+    values = generatePerferences(preferences)
 
-    if tieBreak == 'max':
+    # 记录第一个出现的次数
+    dict = {}
+    for pref in values:
+        if pref[0] not in dict.keys():  ##未经记录，设置为0
+            dict[pref[0]] = 0
+        # 保证了选择存在dict，可以统计了
+        dict[pref[0]] += 1
 
-        pass
-    elif tieBreak == 'min':
-        pass
-    else:  ## integer between 1 and n
-        pass
-
-    return 0
+    return tieBreakFindValueByDict(dict,tieBreak)
 
 
 def veto(preferences, tieBreak):
@@ -128,7 +131,7 @@ def STV(preferences, tieBreak):
     rng = int(tieBreak)
     return list[rng]
 
-    return 0
+    #return 0
 
 
 def rangeVoting(values, tieBreak):
