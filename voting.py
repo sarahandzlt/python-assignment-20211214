@@ -182,12 +182,23 @@ def STV(preferences, tieBreak):
     # return 0
 
 
-# TODO:
 def rangeVoting(values, tieBreak):
     # 这个是最终需要实现的
-    # 传进来应该第一步需要获取priority排序，使用task1的办法
-    preferences = generatePerferences(values)
+    # rangeVoting没必要排序，先全部加上
+
+    dict = {}  # 记录每个候选人的分数变化
+    for prop in values:
+        leng = len(prop)
+        for i in range(0, leng):
+            current = prop[i]  # 当前分数。当前的选择是 i
+            # 更新dictionary
+            if i not in dict.keys():  ##未经记录，设置为0
+                dict[i] = 0
+            # 保证了选择存在dict，可以统计了
+            dict[i] = dict[i] + current
+
+    # 最终dict就是结果，但不能立刻返回
+    return tieBreakFindValueByDict(dict, tieBreak)
     # 然后根据tieBreak选出一个
-    # 还没读懂，函数之间的调用关系靠猜
 
     return 0
